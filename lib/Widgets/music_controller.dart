@@ -53,14 +53,14 @@ class _MusicControllerState extends State<MusicController> {
               SizedBox(height: 22),
       
               Text(
-                "Naam",
+                "Khali Panna",
                 style: TextStyle(
                     fontSize: 28,
                     color: MyColors().textColor,fontWeight: FontWeight.bold),
               ),
       
               Text(
-                "Mera Naam Natkhat",
+                "Natkhat",
                 style: TextStyle(
                     fontSize: 18,
                     color: MyColors().textColor,fontWeight: FontWeight.w600),
@@ -101,6 +101,7 @@ class _MusicControllerState extends State<MusicController> {
                     });
                   },
                     icon: isShuffle ? Icons.shuffle_outlined : Icons.shuffle_on , size: 40,
+
                   ),
       
                   //Previous Song
