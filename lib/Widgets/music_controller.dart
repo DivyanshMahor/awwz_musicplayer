@@ -45,7 +45,15 @@ class _MusicControllerState extends State<MusicController> {
                   color: MyColors().appBarColor,
       
                   borderRadius: BorderRadius.circular(22),
-      
+                    boxShadow: [
+                      BoxShadow(
+                        color: MyColors().accentColor.withAlpha(150),
+
+                        offset: Offset(1,2),
+                        blurRadius: 5,
+                        spreadRadius: 1,
+                      )
+                    ]
                 ),
       
       
@@ -63,7 +71,7 @@ class _MusicControllerState extends State<MusicController> {
                 "Natkhat",
                 style: TextStyle(
                     fontSize: 18,
-                    color: MyColors().textColor,fontWeight: FontWeight.w600),
+                    color: MyColors().accentColor,fontWeight: FontWeight.w600),
               ),
       
       
@@ -121,8 +129,16 @@ class _MusicControllerState extends State<MusicController> {
                         borderRadius: BorderRadius.circular(20),
       
       
-                        color: MyColors().appBarColor,
-      
+                        color: MyColors().accentColor,
+                          boxShadow: [
+                            BoxShadow(
+                              color: MyColors().accentColor.withAlpha(150),
+
+                              offset: Offset(1,2),
+                              blurRadius: 5,
+                              spreadRadius: 1,
+                            )
+                          ]
                       ),
                       child: buildMusicButton(onPressed: (){
                         setState(() {
