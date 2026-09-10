@@ -1,11 +1,13 @@
-import 'package:awwz_music/helper/app_bar.dart';
+import 'package:awwz_music/common/app_bar.dart';
+import 'package:awwz_music/services/music_services.dart';
 import 'package:flutter/material.dart';
 
 import '../Widgets/music_controller.dart';
-import '../helper/my_colors.dart';
+import '../theme/my_colors.dart';
 
 class MusicListScreen extends StatelessWidget {
   const MusicListScreen({super.key});
+
 
   Widget songTile(BuildContext context,title, artist){
     return Padding(
@@ -40,6 +42,13 @@ class MusicListScreen extends StatelessWidget {
 
     }
 
+    Future<void> loadSongs() async {
+
+    final musicServices = MusicServices();
+    await musicServices.fetchAudio();
+
+  }
+
     @override
     Widget build(BuildContext context) {
       return Scaffold(
@@ -63,7 +72,10 @@ class MusicListScreen extends StatelessWidget {
             SizedBox(height: 12,),
 
 Expanded(child: ListView(children: [
-for(int i = 0; i < 10; i++) ...[
+// for(int i = 0; i < 10; i++) ...[
+ElevatedButton(onPressed: () async {
+  await loadSongs();
+}, child: Text("Click")),
 
   songTile(context,"Aankhon Aankhon", "Yo Yo Honey Singh"), SizedBox(height: 12),
 
@@ -72,7 +84,7 @@ for(int i = 0; i < 10; i++) ...[
   songTile(context,"Yeh Fitoor Mera", "Arijit Singh"), SizedBox(height: 12),
 
 
-        ],
+        // ],
 ],
     ),
     ),

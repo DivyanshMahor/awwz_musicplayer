@@ -1,7 +1,7 @@
 import 'package:awwz_music/Screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'helper/my_colors.dart';
+import 'theme/my_colors.dart';
 
 void main(){
   runApp(const AwwZ());

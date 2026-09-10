@@ -1,8 +1,8 @@
 import 'package:awwz_music/Screens/music_list_screen.dart';
 import 'package:awwz_music/Screens/splash_screen.dart';
 import 'package:awwz_music/Widgets/music_controller.dart';
-import 'package:awwz_music/helper/app_bar.dart';
-import 'package:awwz_music/helper/my_colors.dart';
+import 'package:awwz_music/common/app_bar.dart';
+import 'package:awwz_music/theme/my_colors.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
