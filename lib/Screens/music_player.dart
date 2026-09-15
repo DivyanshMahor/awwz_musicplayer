@@ -1,20 +1,43 @@
 import 'package:awwz_music/common/app_bar.dart';
+import 'package:awwz_music/services/music_player_services.dart';
 import 'package:awwz_music/theme/my_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:local_audio_scan/local_audio_scan.dart';
 
 class MusicController extends StatefulWidget {
-  const MusicController({super.key});
+  final AudioTrack song;
+  const MusicController({super.key, required this.song});
 
   @override
   State<MusicController> createState() => _MusicControllerState();
 }
 
 class _MusicControllerState extends State<MusicController> {
+  final MusicPlayerServices _playerService = MusicPlayerServices();
+
+  @override
+  void initState(){
+    super.initState();
+    _loadSong();
+  }
+
+  Future<void> _loadSong() async{
+
+    await _playerService.loadSong(widget.song);
+
+    setState(() {
+      duration = _playerService.player.duration ?? Duration.zero;
+    });
+  }
+
   late final screenWidth = MediaQuery.of(context).size.width;
-  bool isPlaying = false; // play button
+
+  bool isPlaying = false;
   int isRepeat = 0; // repeat button
   bool isShuffle = false; // shuffle button
+  Duration duration = Duration.zero;
+  Duration position = Duration.zero;
 
 
   @override
@@ -140,11 +163,25 @@ class _MusicControllerState extends State<MusicController> {
                             )
                           ]
                       ),
-                      child: buildMusicButton(onPressed: (){
-                        setState(() {
-                         isPlaying = !isPlaying;
-                        });
-                      },
+
+                      child: buildMusicButton(
+                        onPressed: () async {
+
+                          if (isPlaying) { // false
+                          await _playerService.pauseSong();
+
+                          setState(() {
+                             isPlaying = false;
+                          });
+
+                      }else{
+                          await _playerService.playSong();
+                          setState(() {
+                             isPlaying = true;
+                          });
+                        }
+                        },
+
                         icon:  isPlaying ?   Icons.pause
                             : Icons.play_arrow ,
       
@@ -184,8 +221,10 @@ class _MusicControllerState extends State<MusicController> {
 
   }
 }
+
+
 Widget buildMusicButton({
-  required IconData icon,
+  required IconData? icon,
   required VoidCallback onPressed,
   double size = 60,
 

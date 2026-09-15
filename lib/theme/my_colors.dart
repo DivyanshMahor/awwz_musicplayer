@@ -1,18 +1,36 @@
+
+
+
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
-
 class MyColors {
-  // Pure modern dark music app background
-  Color bgColor = const Color(0xFF0D0E15);
+// Main background
+Color bgColor = Colors.purple.withAlpha(90);
 
-  // App bar aur player card ke liye sleek dark grey-blue
-  Color appBarColor = const Color(0xFF1A1C29);
 
-  // Cute vibrant lavender purple (Icons aur headings ke liye)
-  Color textColor = const Color(0xFFBB86FC);
+// App bar / dark glass
+Color appBarColor = const Color(0xFF171925);
 
-  // Soft whitish-pink jo dark mode me aankhon ko chubhega nahi
-  Color lighttxtColor = const Color(0xFFE8E4F6);
+// Main lavender
+Color textColor = const Color(0xFFC8A2FF);
 
-  // Bonus accent (Agar future me kahi use karna ho)
-  Color accentColor = const Color(0xFFFF79C6);
+// Main light text
+Color lighttxtColor = const Color(0xFFEDE8F8);
+
+// Pink accent
+Color accentColor = const Color(0xFFFF79C6);
+
+// Glass white highlight
+Color glassWhite = const Color(0xFFFFFFFF);
+
+// Glass purple
+Color glassPurple = const Color(0xFFBB86FC);
+
+// Glass pink
+Color glassPink = const Color(0xFFFF79C6);
+
+// Glass shadow
+Color glassBlack = const Color(0xFF000000);
 }
+

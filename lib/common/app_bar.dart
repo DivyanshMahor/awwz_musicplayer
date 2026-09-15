@@ -7,18 +7,21 @@ class MyAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-backgroundColor: Colors.transparent,
-      centerTitle: true,
-      title: Text("AwwZ", style:
-      TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w700,
-          color: MyColors().textColor
-
-      ),),
-
-
+    return Stack(
+      children:[ AppBar(
+      backgroundColor: Colors.transparent,
+        centerTitle: true,
+        title: Text("AwwZ", style:
+        TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            color: MyColors().textColor
+      
+        ),),
+      
+      
+      ),
+    ],
     );
   }
 }

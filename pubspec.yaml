@@ -15,10 +15,13 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   flutter_native_splash: ^2.4.7
-  audio_fetcher: ^0.0.6
-  on_audio_query_pluse: ^3.0.7
 
-audio_query: ^0.0.6
+  just_audio: ^0.10.6
+  local_audio_scan: ^2.0.0
+
+#  audio_fetcher: ^0.0.6
+#  on_audio_query_pluse: ^3.0.7
+#audio_query: ^0.0.6
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4
   flutter_test:
