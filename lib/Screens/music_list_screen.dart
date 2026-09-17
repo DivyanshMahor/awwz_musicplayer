@@ -225,12 +225,15 @@ class _MusicListScreenState extends State<MusicListScreen> {
                           color: MyColors().lighttxtColor.withAlpha(180),
                         ),
 
+                        //navigation
                         onTap: () {
                           Navigator.push(
                             context,
 
                             MaterialPageRoute(builder: (context) => MusicController(
                               song: songs[index],
+                              index: index,
+                              songs: songs,
                             )),
                           );
                         },

@@ -2,12 +2,16 @@ import 'package:awwz_music/common/app_bar.dart';
 import 'package:awwz_music/services/music_player_services.dart';
 import 'package:awwz_music/theme/my_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+
 import 'package:local_audio_scan/local_audio_scan.dart';
+import 'dart:async';
 
 class MusicController extends StatefulWidget {
   final AudioTrack song;
-  const MusicController({super.key, required this.song});
+  final int index;
+final List<AudioTrack> songs;
+
+  const MusicController({super.key, required this.song, required this.index, required this.songs});
 
   @override
   State<MusicController> createState() => _MusicControllerState();
@@ -24,11 +28,32 @@ class _MusicControllerState extends State<MusicController> {
 
   Future<void> _loadSong() async{
 
-    await _playerService.loadSong(widget.song);
+    await _playerService.loadPlaylist(widget.songs,widget.index);
+
+    await _playerService.playSong();
 
     setState(() {
       duration = _playerService.player.duration ?? Duration.zero;
+      isPlaying = true;
     });
+
+    _timer = Timer.periodic(const Duration(milliseconds: 500),
+
+        (timer) {
+      if (mounted){
+        setState(() {
+          position = _playerService.player.position;
+        });
+      }
+        }
+    );
+  }
+
+  @override
+  void dispose(){
+    _timer?.cancel();
+    _playerService.dispose();
+    super.dispose();
   }
 
   late final screenWidth = MediaQuery.of(context).size.width;
@@ -38,6 +63,7 @@ class _MusicControllerState extends State<MusicController> {
   bool isShuffle = false; // shuffle button
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
+  Timer? _timer; // for duration
 
 
   @override
@@ -99,20 +125,30 @@ class _MusicControllerState extends State<MusicController> {
       
       
               Slider.adaptive(
-                value: 10,
+                value: position.inMilliseconds.toDouble().clamp(0, duration.inMilliseconds.toDouble()),
                 min: 0,
-                max: 100,
+                max: duration.inMilliseconds.toDouble() > 0 ? duration.inMilliseconds.toDouble() : 1,
                 onChanged: (value) {
-      
+                  setState(() {
+                    position = Duration(milliseconds: value.toInt());
+                  });
+
                 },
-      
+
+                onChangeEnd: (value) async {
+                  await _playerService.songDuration(Duration(milliseconds: value.toInt(),));
+                },
+
               ),
       
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
       //Duration // TimeStamp
-                  Text("00:00",style: TextStyle(fontSize: 20,color: MyColors().textColor,fontWeight: FontWeight.bold),),
+                  Text(
+  "",
+
+                    style: TextStyle(fontSize: 20,color: MyColors().textColor,fontWeight: FontWeight.bold),),
                   Text("02:23",style: TextStyle(fontSize: 20,color: MyColors().textColor,fontWeight: FontWeight.bold),),
                 ],
               ),
@@ -123,15 +159,15 @@ class _MusicControllerState extends State<MusicController> {
                 mainAxisAlignment: MainAxisAlignment.center,
       
                 children: [
-      
-      
                   //Shuffle
                   buildMusicButton(onPressed: (){
                     setState(() {
                       isShuffle = !isShuffle;
+                      _playerService.shuffleSongs();
                     });
                   },
                     icon: isShuffle ? Icons.shuffle_outlined : Icons.shuffle_on , size: 40,
+
 
                   ),
       
@@ -167,7 +203,7 @@ class _MusicControllerState extends State<MusicController> {
                       child: buildMusicButton(
                         onPressed: () async {
 
-                          if (isPlaying) { // false
+                          if (isPlaying) {
                           await _playerService.pauseSong();
 
                           setState(() {
@@ -236,4 +272,5 @@ Widget buildMusicButton({
     color: MyColors().lighttxtColor,
   ),
   );
+
 }

@@ -4,27 +4,36 @@ import 'package:local_audio_scan/local_audio_scan.dart';
 class MusicPlayerServices {
   final AudioPlayer player = AudioPlayer();
 
-  Future<void> loadSong(AudioTrack song) async{
-    //set song file path in Player
-    await player.setFilePath(song.filePath);
+  Future<void> loadPlaylist(List<AudioTrack> songs, int index) async {
 
+    final audioSources = songs.map( (song) {
+      return AudioSource.file(song.filePath);
+    }).toList();
+    
+    await player.setAudioSources(audioSources, initialIndex: index,);
   }
-  Future<void> playSong() async{
+
+  Future<void> loadSong(AudioTrack song) async {
+    await player.setFilePath(song.filePath); //set a song file path in Player
+  }
+
+  Future<void> playSong() async {
     await player.play();
   }
 
-  Future<void> pauseSong() async{
+  Future<void> pauseSong() async {
     await player.pause();
   }
 
-  Future<void> oneLoop() async{
+  Future<void> oneLoop() async {
     await player.setLoopMode(LoopMode.one);
   }
 
-  Future<void> allLoop() async{
+  Future<void> allLoop() async {
     await player.setLoopMode(LoopMode.all);
   }
-  Future<void> noLoop() async{
+
+  Future<void> noLoop() async {
     await player.setLoopMode(LoopMode.off);
   }
 
@@ -39,5 +48,4 @@ class MusicPlayerServices {
   Future<void> dispose() async {
     await player.dispose();
   }
-
 }
