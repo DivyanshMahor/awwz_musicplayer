@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:awwz_music/common/app_bar.dart';
 import 'package:awwz_music/services/music_player_services.dart';
 import 'package:awwz_music/theme/my_colors.dart';
@@ -18,11 +20,38 @@ final List<AudioTrack> songs;
 }
 
 class _MusicControllerState extends State<MusicController> {
+
+
   final MusicPlayerServices _playerService = MusicPlayerServices();
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
+
+    _playerService.player.positionStream.listen((value) {
+      if (!mounted) return;
+
+      setState(() {
+        position = value;
+      });
+    });
+
+    _playerService.player.durationStream.listen((value) {
+      if (!mounted) return;
+
+      setState(() {
+        duration = value ?? Duration.zero;
+      });
+    });
+
+    _playerService.player.playingStream.listen((value) {
+      if (!mounted) return;
+
+      setState(() {
+        isPlaying = value;
+      });
+    });
+
     _loadSong();
   }
 
@@ -30,28 +59,13 @@ class _MusicControllerState extends State<MusicController> {
 
     await _playerService.loadPlaylist(widget.songs,widget.index);
 
-    await _playerService.playSong();
+    // await
+    _playerService.playSong();
 
-    setState(() {
-      duration = _playerService.player.duration ?? Duration.zero;
-      isPlaying = true;
-    });
-
-    _timer = Timer.periodic(const Duration(milliseconds: 500),
-
-        (timer) {
-      if (mounted){
-        setState(() {
-          position = _playerService.player.position;
-        });
-      }
-        }
-    );
   }
 
   @override
   void dispose(){
-    _timer?.cancel();
     _playerService.dispose();
     super.dispose();
   }
@@ -63,11 +77,11 @@ class _MusicControllerState extends State<MusicController> {
   bool isShuffle = false; // shuffle button
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
-  Timer? _timer; // for duration
 
 
   @override
   Widget build(BuildContext context) {
+    final maxDuration = duration.inMilliseconds.toDouble();
     return Scaffold(
 
       appBar:
@@ -81,53 +95,89 @@ class _MusicControllerState extends State<MusicController> {
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Center(
+
           child: Column(
             // mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-      
-              Container(
-                height: screenWidth * 0.8,
-                width: screenWidth * 0.8,
-                decoration: BoxDecoration(
-                  color: MyColors().appBarColor,
-      
-                  borderRadius: BorderRadius.circular(22),
-                    boxShadow: [
-                      BoxShadow(
-                        color: MyColors().accentColor.withAlpha(150),
-
-                        offset: Offset(1,2),
-                        blurRadius: 5,
-                        spreadRadius: 1,
-                      )
-                    ]
+      //artwork
+              BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: 12,
+                  sigmaY: 12,
                 ),
-      
-      
+                child: Container(
+                  height: screenWidth * 0.8,
+                  width: screenWidth * 0.8,
+                  decoration: BoxDecoration(
+                
+                    //trans glass
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors:[
+                        MyColors().accentColor.withAlpha(175),
+                        MyColors().glassWhite.withAlpha(70),
+                        MyColors().glassPurple.withAlpha(165),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: MyColors().glassWhite.withAlpha(95),
+                      width: 1.5,
+                    ),
+                
+                      boxShadow: [
+                        BoxShadow(
+                          color: MyColors().accentColor.withAlpha(150),
+                          offset: Offset(1,2),
+                          blurRadius: 5,
+                          spreadRadius: 1,
+                        ),
+                      ],
+                  ),
+                child:
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: widget.song.artwork != null ?
+                    Image.memory(widget.song.artwork!,
+                      height: screenWidth * 0.8,
+                      width: screenWidth * 0.8,
+                      fit: BoxFit.cover,
+                    ) : Center(child: Icon(Icons.music_note, size: 100, color: Colors.white,) ,)
+                  ),
+                
+                ),
               ),
+
+
+
+
               SizedBox(height: 22),
       
               Text(
-                "Khali Panna",
+                widget.song.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                    fontSize: 28,
+                    fontSize: 20,
                     color: MyColors().textColor,fontWeight: FontWeight.bold),
               ),
       
               Text(
-                "Natkhat",
+                widget.song.artist,
+                maxLines: 1,overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                     fontSize: 18,
                     color: MyColors().accentColor,fontWeight: FontWeight.w600),
               ),
-      
-      
+
+
               Slider.adaptive(
-                value: position.inMilliseconds.toDouble().clamp(0, duration.inMilliseconds.toDouble()),
+                value: position.inMilliseconds.toDouble().clamp(0, maxDuration > 0 ? maxDuration : 1),
                 min: 0,
-                max: duration.inMilliseconds.toDouble() > 0 ? duration.inMilliseconds.toDouble() : 1,
+                max: maxDuration > 0 ? maxDuration : 1,
                 onChanged: (value) {
                   setState(() {
                     position = Duration(milliseconds: value.toInt());
@@ -146,13 +196,13 @@ class _MusicControllerState extends State<MusicController> {
                 children: [
       //Duration // TimeStamp
                   Text(
-  "",
+  "00:00",
 
                     style: TextStyle(fontSize: 20,color: MyColors().textColor,fontWeight: FontWeight.bold),),
                   Text("02:23",style: TextStyle(fontSize: 20,color: MyColors().textColor,fontWeight: FontWeight.bold),),
                 ],
               ),
-      
+
               SizedBox(height: 40,),
       
               Row(
@@ -179,16 +229,28 @@ class _MusicControllerState extends State<MusicController> {
                   //Play/Pause
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                    child: Container(
+                    child:
+
+                    Container(
                       height: 80,
                       width: 80,
-      
+
                       decoration: BoxDecoration(
-                        // shape: BoxShape.circle,
-                        borderRadius: BorderRadius.circular(20),
-      
-      
-                        color: MyColors().accentColor,
+
+                        //trans glass
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors:[
+                              MyColors().accentColor.withAlpha(175),
+                              MyColors().glassWhite.withAlpha(90),
+                              MyColors().glassPurple.withAlpha(165),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+
+
+                          color: MyColors().accentColor,
                           boxShadow: [
                             BoxShadow(
                               color: MyColors().accentColor.withAlpha(150),
@@ -203,28 +265,23 @@ class _MusicControllerState extends State<MusicController> {
                       child: buildMusicButton(
                         onPressed: () async {
 
-                          if (isPlaying) {
+                          if (_playerService.player.playing) {
                           await _playerService.pauseSong();
-
-                          setState(() {
-                             isPlaying = false;
-                          });
-
                       }else{
                           await _playerService.playSong();
-                          setState(() {
-                             isPlaying = true;
-                          });
+
                         }
                         },
 
+                        //playbotton
                         icon:  isPlaying ?   Icons.pause
                             : Icons.play_arrow ,
-      
+
                       ),
                     ),
+
                   ),
-      
+
                   //Next Song
                   buildMusicButton(onPressed: (){},
                     icon: Icons.skip_next,

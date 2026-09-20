@@ -139,9 +139,9 @@ class _MusicListScreenState extends State<MusicListScreen> {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors:[
-                            MyColors().accentColor.withAlpha(85),
-                            MyColors().glassWhite.withAlpha(48),
-                            MyColors().glassPurple.withAlpha(70),
+                            MyColors().accentColor.withAlpha(175),
+                            MyColors().glassWhite.withAlpha(90),
+                            MyColors().glassPurple.withAlpha(165),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(20),
